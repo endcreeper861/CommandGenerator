@@ -1,3 +1,4 @@
+from enchantment import Enchantment
 from nbt import NBT
 
 
@@ -11,9 +12,10 @@ class Item:
         damage: int = 0,
         hide_flags: int = 0,
         unbreakable: bool = False,
-        can_destroy: list = [],
-        can_place_on: list = [],
-        tags: list = [],
+        can_destroy: list[str] = [],
+        can_place_on: list[str] = [],
+        tags: list[str] = [],
+        enchantments: list[Enchantment] = [],
         **kwargs
     ) -> None:
         """
@@ -39,6 +41,8 @@ class Item:
             冒险模式的玩家可以将方块放置在其表面的方块列表。
         tags:
             该物品的标签列表。
+        enchantments:
+            包含影响物品特征的附魔信息。
         除此以外，还可以自己指定想要的NBT标签。示例：
         `my_item = Item("minecraft:diamond_pickaxe", a=1, b="something", c=[3, 1, 4])`
         """
@@ -61,7 +65,10 @@ class Item:
         self.nbt = NBT(**nbt)
 
     def __str__(self) -> str:
-        string = str(NBT(Count=self.count, id=self.id, tag=self.nbt.dict))
+        if self.nbt.dict == {}:
+            string = str(NBT(Count=self.count, id=self.id))
+        else:
+            string = str(NBT(Count=self.count, id=self.id, tag=self.nbt.dict))
         return string
 
     def give(self):
