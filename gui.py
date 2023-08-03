@@ -23,7 +23,7 @@ def find_item(name: str):
     with open("item_list.csv", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             if row["Name"] == name:
-                return "minecraft:" + row["ID"]
+                return row["ID"]
     return "minecraft:air"
 
 
@@ -78,7 +78,6 @@ def generate_and_copy():
 # 创建窗口，并初始化
 window = tk.Tk()
 window.title("命令生成器")  # 设置标题
-window.geometry("430x700")  # 设置大小
 window.resizable(False, False)  # 禁止调整窗口大小
 window.iconbitmap("command_generator.ico")  # 设置图标
 
