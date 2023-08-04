@@ -18,24 +18,20 @@ window.title("附魔编辑器")  # 设置标题
 window.resizable(False, False)  # 禁止调整窗口大小
 window.iconbitmap("command_generator.ico")  # 设置图标
 
-tab_control = ttk.Notebook(window)
-tab_name_list = ["全部", "剑/斧", "弓", "弩", "三叉戟", "盔甲", "工具", "通用"]
+tab_name_list = ["剑/斧附魔", "弓附魔", "弩附魔", "三叉戟附魔", "盔甲附魔", "工具附魔", "通用附魔"]
 tab_list = []
 name_dict = {
-    "全部": "all",
-    "剑/斧": "sword",
-    "弓": "bow",
-    "弩": "crossbow",
-    "三叉戟": "trident",
-    "盔甲": "armor",
-    "工具": "tool",
-    "通用": "common",
+    "剑/斧附魔": "sword",
+    "弓附魔": "bow",
+    "弩附魔": "crossbow",
+    "三叉戟附魔": "trident",
+    "盔甲附魔": "armor",
+    "工具附魔": "tool",
+    "通用附魔": "common",
 }
-for tab_name in tab_name_list:
-    tab_list.append(ttk.Frame(tab_control))
-    tab_control.add(tab_list[-1], text=tab_name)
-
-tab_control.pack(expand=1, fill="both")
+for i, tab_name in enumerate(tab_name_list):
+    tab_list.append(ttk.LabelFrame(text=tab_name))
+    tab_list[-1].grid(column=0, row=i, padx=8, pady=4, sticky=tk.W)
 
 enchantment_list = read_enchantment_list()
 choose_list = []
@@ -51,7 +47,7 @@ for tab, tab_name in zip(tab_list, tab_name_list):
     counter = 0
     for i, enchantment in enumerate(enchantment_list):
         name, id, type = enchantment
-        if name_dict[tab_name] == "all" or name_dict[tab_name] == type:
+        if name_dict[tab_name] == type:
             check_button_list.append(
                 ttk.Checkbutton(tab, text=name, variable=choose_list[i])
             )
