@@ -4,7 +4,7 @@ from nbt import NBT
 class Enchantment:
     """Minecraft附魔的类"""
 
-    def __init__(self, id: str, level: int) -> None:
+    def __init__(self, id: str, level: int = 1) -> None:
         """
         id:
             魔咒的命名空间ID。
@@ -13,6 +13,6 @@ class Enchantment:
         """
         self.id = id
         self.level = level
-    
+
     def __str__(self) -> str:
         return str(NBT(id=self.id, lvl=self.level))

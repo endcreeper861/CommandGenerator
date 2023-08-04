@@ -46,5 +46,7 @@ def _list_to_string(new_list):
                 string += f"1b,"
             else:
                 string += f"0b,"
+        else:
+            string += f"{element},"
     string = string[:-1] + "]"
     return string

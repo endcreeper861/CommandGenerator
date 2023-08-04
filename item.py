@@ -61,6 +61,8 @@ class Item:
             nbt["CanPlaceOn"] = can_place_on
         if tags != []:
             nbt["Tags"] = tags
+        if enchantments != []:
+            nbt["Enchantments"] = enchantments
         nbt.update(kwargs)
         self.nbt = NBT(**nbt)
 
