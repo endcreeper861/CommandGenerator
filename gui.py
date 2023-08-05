@@ -6,6 +6,7 @@ from tkinter.scrolledtext import ScrolledText
 from pyperclip import copy
 
 from commands import Give
+from enchantment_edit import ask_enchantments
 from item import Item
 
 
@@ -52,9 +53,15 @@ def generate():
         can_destroy_text.get(1.0, "end").split(),
         can_place_text.get(1.0, "end").split(),
         tags_text.get(1.0, "end").split(),
+        enchantment_list
     )
     command = Give("@s", custom_item)
     return str(command)
+
+def get_enchantments():
+    """打开附魔编辑器以获取和查看附魔"""
+    global enchantment_list
+    enchantment_list = ask_enchantments(enchantment_list)
 
 
 def generate_and_show():
@@ -75,6 +82,8 @@ def generate_and_copy():
     copy(command)
 
 
+enchantment_list = []
+
 # 创建窗口，并初始化
 window = tk.Tk()
 window.title("命令生成器")  # 设置标题
@@ -82,9 +91,9 @@ window.resizable(False, False)  # 禁止调整窗口大小
 window.iconbitmap("command_generator.ico")  # 设置图标
 
 # 创建命令选择器
-ttk.Label(text="选择命令：").grid(column=0, row=0, padx=8, pady=4, sticky=tk.W)
+ttk.Label(window, text="选择命令：").grid(column=0, row=0, padx=8, pady=4, sticky=tk.W)
 command = tk.StringVar()
-command_chosen = ttk.Combobox(width=12, textvariable=command)
+command_chosen = ttk.Combobox(window, width=12, textvariable=command)
 command_chosen["values"] = ("give",)
 command_chosen.grid(column=0, row=0, padx=80, pady=4, sticky=tk.W)
 command_chosen.current(0)  # 设置初始显示值，值为元组['values']的下标
@@ -92,7 +101,7 @@ command_chosen.config(state="readonly")  # 设为只读模式
 
 # 创建give命令的窗口
 # 基础设定
-basic_setting = ttk.LabelFrame(text="基础设定")
+basic_setting = ttk.LabelFrame(window, text="基础设定")
 basic_setting.grid(column=0, row=1, padx=8, pady=4, sticky=tk.W)
 
 ttk.Label(basic_setting, text="选择/输入物品id：").grid(column=0, row=0)  # 输入物品名称
@@ -104,12 +113,12 @@ item_chosen.grid(column=1, row=0)
 item_chosen.current(0)
 
 ttk.Label(basic_setting, text="物品数量：").grid(column=0, row=1)  # 输入数量
-count = tk.IntVar(value=1)
+count = tk.IntVar(window, value=1)
 count_entered = ttk.Entry(basic_setting, width=12, textvariable=count)
 count_entered.grid(column=1, row=1)
 
 ttk.Label(basic_setting, text="损害值：").grid(column=0, row=2)  # 输入损害值
-damage = tk.IntVar()
+damage = tk.IntVar(window)
 damage_entered = ttk.Entry(basic_setting, width=12, textvariable=damage)
 damage_entered.grid(column=1, row=2)
 
@@ -122,47 +131,55 @@ tags_text.grid(column=1, row=3)
 for child in basic_setting.winfo_children():
     child.grid_configure(padx=3, pady=1, sticky=tk.N + tk.W)
 
-# 进阶设定
-advanced_setting = ttk.LabelFrame(text="进阶设定")
-advanced_setting.grid(column=0, row=2, padx=8, pady=4, sticky=tk.W)
+#附魔设定
+enchantment_setting = ttk.LabelFrame(window, text="附魔设定")
+enchantment_setting.grid(column=0, row=2, padx=8, pady=4, sticky=tk.W)
+ttk.Button(enchantment_setting, text="编辑附魔", width=55, command=get_enchantments).grid(
+    column=0, row=0, padx=3, pady=1
+)
 
-unbreakable = tk.BooleanVar()  # 无法破坏标签
+
+# 进阶设定
+advanced_setting = ttk.LabelFrame(window, text="进阶设定")
+advanced_setting.grid(column=0, row=3, padx=8, pady=4, sticky=tk.W)
+
+unbreakable = tk.BooleanVar(window)  # 无法破坏标签
 unbreakable_check = ttk.Checkbutton(advanced_setting, text="无限耐久", variable=unbreakable)
 unbreakable_check.grid(column=0, row=0)
 
 # 以下这一坨全是隐藏信息
 hide_infos = ttk.LabelFrame(advanced_setting, text="鼠标停留在物品时隐藏的信息")
 hide_infos.grid(column=0, row=1, padx=8, pady=4, sticky=tk.W)
-hide_enchantment = tk.BooleanVar()
+hide_enchantment = tk.BooleanVar(window)
 hide_enchantment_check = ttk.Checkbutton(
     hide_infos, text="附魔信息", variable=hide_enchantment
 )
 hide_enchantment_check.grid(column=0, row=0)
-hide_attribute = tk.BooleanVar()
+hide_attribute = tk.BooleanVar(window)
 hide_attribute_check = ttk.Checkbutton(hide_infos, text="属性信息", variable=hide_attribute)
 hide_attribute_check.grid(column=1, row=0)
-hide_unbreakable = tk.BooleanVar()
+hide_unbreakable = tk.BooleanVar(window)
 hide_unbreakable_check = ttk.Checkbutton(
     hide_infos, text="无法破坏", variable=hide_unbreakable
 )
 hide_unbreakable_check.grid(column=2, row=0)
-hide_can_destroy = tk.BooleanVar()
+hide_can_destroy = tk.BooleanVar(window)
 hide_can_destroy_check = ttk.Checkbutton(
     hide_infos, text="可破坏方块", variable=hide_can_destroy
 )
 hide_can_destroy_check.grid(column=3, row=0)
-hide_can_place = tk.BooleanVar()
+hide_can_place = tk.BooleanVar(window)
 hide_can_place_check = ttk.Checkbutton(
     hide_infos, text="可放置方块", variable=hide_can_place
 )
 hide_can_place_check.grid(column=4, row=0)
-hide_other = tk.BooleanVar()
+hide_other = tk.BooleanVar(window)
 hide_other_check = ttk.Checkbutton(hide_infos, text="其他信息", variable=hide_other)
 hide_other_check.grid(column=0, row=1)
-hide_color = tk.BooleanVar()
+hide_color = tk.BooleanVar(window)
 hide_color_check = ttk.Checkbutton(hide_infos, text="染色信息", variable=hide_color)
 hide_color_check.grid(column=1, row=1)
-hide_trim = tk.BooleanVar()
+hide_trim = tk.BooleanVar(window)
 hide_trim_check = ttk.Checkbutton(hide_infos, text="盔甲纹样", variable=hide_trim)
 hide_trim_check.grid(column=2, row=1)
 for child in hide_infos.winfo_children():
@@ -184,7 +201,7 @@ for child in advanced_setting.winfo_children():
 
 
 # 命令生成区
-generate_area = ttk.LabelFrame(text="命令生成区")
+generate_area = ttk.LabelFrame(window, text="命令生成区")
 generate_area.grid(column=0, row=4, padx=8, pady=4, sticky=tk.W)
 
 # 生成命令按钮
