@@ -23,7 +23,7 @@ class NBT:
                 string += f"{key}:"+_list_to_string(item)+","
             elif type(item) == dict:
                 string += f"{key}:{NBT(**item)}"
-            else:
+            elif item != None:
                 string += f"{key}:{item},"
         string = string[:-1] + "}"
         return string

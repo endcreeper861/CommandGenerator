@@ -1,20 +1,26 @@
 import tkinter as tk
+from csv import DictReader
+from itertools import compress
 from tkinter import ttk
-import csv
+
 from enchantment import Enchantment
 
 
-def ask_enchantments(chosen_enchantments: list[Enchantment] = []) -> list[Enchantment]:
+def ask_enchantments(
+    chosen_enchantments: list[Enchantment] | None = None,
+) -> list[Enchantment]:
     """创建窗口以获取物品的附魔信息"""
+    if chosen_enchantments is None:
+        chosen_enchantments = []
 
     def read_enchantment_list():
         """读取命令列表，并返回一个列表，里面有每个附魔的译名及其ID的元组"""
         enchantments = []
         with open("enchantment_list.csv", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
+            for row in DictReader(f):
                 enchantments.append((row["Name"], row["ID"], row["Type"]))
         return enchantments
-    
+
     def destroy_quit():
         """保存所选的命令并退出"""
         window.destroy()
@@ -44,15 +50,15 @@ def ask_enchantments(chosen_enchantments: list[Enchantment] = []) -> list[Enchan
     all_enchantment_list = read_enchantment_list()
     choose_list = []
     level_list = []
-    #这一步很重要，是将一个包含了很多Enchantment类的列表转换为一个字典
-    #并且以id作为键，level作为值
-    chosen_enchantments = dict((enchantment.id, enchantment.level) for enchantment in chosen_enchantments) # type: ignore
+    # 这一步很重要，是将一个包含了很多Enchantment类的列表转换为一个字典
+    # 并且以id作为键，level作为值
+    chosen_enchantments = dict((enchantment.id, enchantment.level) for enchantment in chosen_enchantments)  # type: ignore
 
     for i, enchantment in enumerate(all_enchantment_list):
         id = enchantment[1]
         if id in chosen_enchantments.keys():  # type: ignore
             choose_list.append(tk.BooleanVar(window, value=True))
-            level_list.append(tk.IntVar(window, value=chosen_enchantments[id]))
+            level_list.append(tk.IntVar(window, value=chosen_enchantments[id]))  # type: ignore
         else:
             choose_list.append(tk.BooleanVar(window, value=False))
             level_list.append(tk.IntVar(window, value=1))
@@ -90,16 +96,18 @@ def ask_enchantments(chosen_enchantments: list[Enchantment] = []) -> list[Enchan
     window.mainloop()
 
     # 检测已经选择的附魔
-    enchantment_list = []
-    for i, choose in enumerate(choose_list):
-        if choose.get() == True:
-            enchantment_list.append(
+    enchantment_list = list(
+        compress(
+            (
                 Enchantment(all_enchantment_list[i][1], level_list[i].get())
-            )
+                for i in range(len(choose_list))
+            ),
+            (choose.get() for choose in choose_list),
+        )
+    )
     return enchantment_list
 
 
 if __name__ == "__main__":
     enchantments = ask_enchantments([Enchantment("minecraft:mending", 1)])
-    for enchantment in enchantments:
-        print(enchantment)
+    print(enchantments)

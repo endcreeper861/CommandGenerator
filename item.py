@@ -12,11 +12,11 @@ class Item:
         damage: int = 0,
         hide_flags: int = 0,
         unbreakable: bool = False,
-        can_destroy: list[str] = [],
-        can_place_on: list[str] = [],
-        tags: list[str] = [],
-        enchantments: list[Enchantment] = [],
-        **kwargs
+        can_destroy: list[str] | None = None,
+        can_place_on: list[str] | None = None,
+        tags: list[str] | None = None,
+        enchantments: list[Enchantment] | None = None,
+        **kwargs,
     ) -> None:
         """
         id:
@@ -46,10 +46,18 @@ class Item:
         除此以外，还可以自己指定想要的NBT标签。示例：
         `my_item = Item("minecraft:diamond_pickaxe", a=1, b="something", c=[3, 1, 4])`
         """
+        if can_destroy is None:
+            can_destroy = []
+        if can_place_on is None:
+            can_place_on = []
+        if tags is None:
+            tags = []
+        if enchantments is None:
+            enchantments = []
         self.count = count
         self.id = id
         nbt = {}
-        if damage != 0 :
+        if damage != 0:
             nbt["Damage"] = damage
         if hide_flags != 0:
             nbt["HideFlags"] = hide_flags

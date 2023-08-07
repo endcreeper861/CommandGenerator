@@ -16,3 +16,6 @@ class Enchantment:
 
     def __str__(self) -> str:
         return str(NBT(id=self.id, lvl=self.level))
+
+    def __repr__(self) -> str:
+        return f"Enchantment({self.id}, {self.level})"
